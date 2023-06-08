@@ -1,0 +1,8 @@
+/include/ "system-conf.dtsi"
+/ {
+};
+&simple_hardware_timer_0 {
+    compatible = "homeuser,fpgatimer";
+    interrupt-parent = <&intc>;
+    interrupts = <0 29 1>;
+    };

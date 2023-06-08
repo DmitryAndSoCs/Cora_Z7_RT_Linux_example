@@ -27,10 +27,6 @@ footer-center:
 footer-right:
 subparagraph: true
 lang: en-US
-header-includes:
- - \usepackage{fvextra}
- - \usepackage{indentfirst}
- - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 ...
 
 # Introduction
@@ -106,6 +102,8 @@ Configue an AXI GPIO block to work with LEDs:
 
 > It connects the pins automatically to the correct locations thanks to the predefined board preferences. In case you have a custom board, you'll need to cover the connections in an *.xdc constraints file with correct assignments. I will briefly touch this part further in the document. 
 
+> In this design it is necessary to change the settings later, because by default it assigns bidir IO to LED pins, but at this stage the automation would be helpful. 
+
 ![Configuring an AXI GPIO for LEDs](../screens/6.vivado_leds_gpio.png "Choosing predefined settings for board LEDs")
 
 Configure the other AXI GPIO block to work with buttons:
@@ -152,6 +150,8 @@ To make it more clear to the reviewer, let's hide the following service blocks i
  In order to do that, choose multiple blocks with `ctrl` in context menu choose `Create hierarchy`. Name those 3 blocks 
 
 ![Create hierarchy action](../screens/13.vivado_create_hierarchy.png)
+
+Change the parameters of the LEDs GPIO: they are input-output by default in this design. The board support file helped with pin locations, but for the ease of use we will need them to be "All output" all the time, this would let us use the simple `devmem` command to write directly into bits that trigger LEDs without the need for drivers or interacting with those through sysfs. 
 
 After that we can finish with customizing the Xilinx-provided blocks that are going to be the core of our design and transition to Custom IP creation.
 
@@ -240,10 +240,42 @@ I suggest moving the `Concat` and `GND` blocks into the "Processing system" hier
 
 ![Resuling block design](../screens/27.vivado_neat_block_design.png)
 
+> Make sure the clock of the Processing system's `FCLK_CLK0` is set to 100 MHz.
+
+In sources tab hit "+" button to add new sources.
+
+![Adding new sources](../screens/27.1.vivado_constraints_creation.png)
+
+After clicking "next" choose "Create file" and name it "pins".
+
+![Creation of pins constraints](../screens/27.2.vivado_create_pins_constraints.png)
+
+Click "Ok" and "Finish". 
+
+Edit the contents of this file to have the following:
+
+```tcl
+#LEDs: LED0 R,G,B LED1 R,G,B
+set_property IOSTANDARD LVCMOS33 [get_ports {rgb_leds_tri_o[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {rgb_leds_tri_o[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {rgb_leds_tri_o[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {rgb_leds_tri_o[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {rgb_leds_tri_o[4]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {rgb_leds_tri_o[5]}]
+set_property PACKAGE_PIN N15 [get_ports {rgb_leds_tri_o[0]}]
+set_property PACKAGE_PIN G17 [get_ports {rgb_leds_tri_o[1]}]
+set_property PACKAGE_PIN L15 [get_ports {rgb_leds_tri_o[2]}]
+set_property PACKAGE_PIN M15 [get_ports {rgb_leds_tri_o[3]}]
+set_property PACKAGE_PIN L14 [get_ports {rgb_leds_tri_o[4]}]
+set_property PACKAGE_PIN G14 [get_ports {rgb_leds_tri_o[5]}]
+```
+
+> This is needed because of customization of LEDs GPIO block. Since "Custom" was chosen, the locations for the pins are not provided by the board support backage. This is why manual specification of the pins is needed. This approach is the same for fully custom boards. 
+
+
 As the last step to finalize the HDL block design developement, in "Sources" tab click on the "Create HDL Wrapper..." in order to make the top-level text description of the blocks used in block design. It is going to be the top file that contains the system design that is auto-updated by Vivado when user makes changes to the block design or its subblocks. I don't recommend turning the auto-update feature off.
 
 ![Creating HDL wrapper for the design](../screens/28.vivado_create_hdl_wrapper.png)
-
 
 At this stage the main part of the design can be considered finished. 
 
@@ -295,7 +327,7 @@ use ieee.numeric_std.all;
 entity simple_hardware_timer_v0_1 is
 	generic (
 		-- Users to add parameters here
-        timer_max_value : integer := 49999999; -- in CLK cycles, '0' counts, with 100 MHz: 10 ns * 499999999+1 = 500 ms
+        timer_max_value : integer := 49999999; -- in CLK cycles, '0' counts, with 100 MHz: 10 ns * 49999999+1 = 500 ms
 		-- User parameters ends
 		-- Do not modify the parameters beyond this line
 
@@ -814,22 +846,22 @@ begin
     timer_proc:process( S_AXI_ACLK )
     variable loc_addr :std_logic_vector(OPT_MEM_ADDR_BITS downto 0); -- for similar address decoding
     begin
-    loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB); -- for similar address decoding
     if rising_edge(S_AXI_ACLK) then
         if S_AXI_ARESETN = '0' then  -- synchronous reset results in a more expected timing behaviour
             timer_cnt <= (others => '0'); -- reset all the bits regardless of vector size
             timer_interrupt_sw <= '0'; -- reset the software interrupt bit
             timer_interrupt <= '0'; -- reset the CPU interrupt bit
         else 
-            timer_cnt <= timer_cnt + 1;
+            loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB); -- for similar address decoding
             if timer_cnt >= timer_max_count then    -- in 'if' statements <= and >= are comparisons (less/more or equal), don't mix them!
                 timer_cnt <= (others => '0');
                 timer_interrupt <= '1'; -- set interrupt for 1 cycle for the CPU
                 timer_interrupt_sw <= '1'; -- set the "long" interrupt for polling software
             else 
                 timer_interrupt <= '0'; -- interrupt is always '0' when the counter is not at the threshold
+                timer_cnt <= timer_cnt + 1;
             end if;
-            if loc_addr = "00" and slv_reg_rden = '1' then -- if the software read the software interrupt bit
+            if ((loc_addr = "00") and (slv_reg_rden = '1')) then -- if the software read the software interrupt bit
                 timer_interrupt_sw <= '0';
             end if;
         end if;

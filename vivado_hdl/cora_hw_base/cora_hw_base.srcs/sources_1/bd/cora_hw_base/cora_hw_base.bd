@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x380034BAF7A0750E",
+      "boundary_crc": "0x6F79613C682D4F8A",
       "device": "xc7z010clg400-1",
       "gen_directory": "../../../../cora_hw_base.gen/sources_1/bd/cora_hw_base",
       "name": "cora_hw_base",
@@ -129,6 +129,12 @@
         "xci_path": "ip\\cora_hw_base_axi_gpio_1_0\\cora_hw_base_axi_gpio_1_0.xci",
         "inst_hier_path": "leds",
         "parameters": {
+          "C_ALL_OUTPUTS": {
+            "value": "1"
+          },
+          "C_GPIO_WIDTH": {
+            "value": "6"
+          },
           "C_IS_DUAL": {
             "value": "0"
           },
@@ -136,7 +142,7 @@
             "value": "Custom"
           },
           "GPIO_BOARD_INTERFACE": {
-            "value": "rgb_leds"
+            "value": "Custom"
           },
           "USE_BOARD_FLOW": {
             "value": "true"
@@ -211,7 +217,7 @@
                 "value": "10.000000"
               },
               "PCW_ACT_FPGA0_PERIPHERAL_FREQMHZ": {
-                "value": "50.000000"
+                "value": "100.000000"
               },
               "PCW_ACT_FPGA1_PERIPHERAL_FREQMHZ": {
                 "value": "10.000000"
@@ -271,7 +277,7 @@
                 "value": "650"
               },
               "PCW_CLK0_FREQ": {
-                "value": "50000000"
+                "value": "100000000"
               },
               "PCW_CLK1_FREQ": {
                 "value": "10000000"
@@ -365,6 +371,9 @@
               },
               "PCW_EN_USB0": {
                 "value": "1"
+              },
+              "PCW_FPGA0_PERIPHERAL_FREQMHZ": {
+                "value": "100"
               },
               "PCW_FPGA_FCLK0_ENABLE": {
                 "value": "1"

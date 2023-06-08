@@ -25,4 +25,7 @@ go.work
 vivado_hdl/cora_hw_base/*
 !vivado_hdl/cora_hw_base/cora_hw_base.srcs
 !vivado_hdl/cora_hw_base/cora_hw_base.tcl
+linux_build_cora/*
+!linux_build_cora/project-spec
+!linux_build_cora/hw
 

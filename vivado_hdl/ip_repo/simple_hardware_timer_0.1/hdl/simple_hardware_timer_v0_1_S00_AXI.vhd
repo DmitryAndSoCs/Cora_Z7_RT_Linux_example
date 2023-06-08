@@ -396,22 +396,22 @@ begin
     timer_proc:process( S_AXI_ACLK )
     variable loc_addr :std_logic_vector(OPT_MEM_ADDR_BITS downto 0); -- for similar address decoding
     begin
-    loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB); -- for similar address decoding
     if rising_edge(S_AXI_ACLK) then
         if S_AXI_ARESETN = '0' then  -- synchronous reset results in a more expected timing behaviour
             timer_cnt <= (others => '0'); -- reset all the bits regardless of vector size
             timer_interrupt_sw <= '0'; -- reset the software interrupt bit
             timer_interrupt <= '0'; -- reset the CPU interrupt bit
         else 
-            timer_cnt <= timer_cnt + 1;
+            loc_addr := axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB); -- for similar address decoding
             if timer_cnt >= timer_max_count then    -- in 'if' statements <= and >= are comparisons (less/more or equal), don't mix them!
                 timer_cnt <= (others => '0');
                 timer_interrupt <= '1'; -- set interrupt for 1 cycle for the CPU
                 timer_interrupt_sw <= '1'; -- set the "long" interrupt for polling software
             else 
                 timer_interrupt <= '0'; -- interrupt is always '0' when the counter is not at the threshold
+                timer_cnt <= timer_cnt + 1;
             end if;
-            if loc_addr = "00" and slv_reg_rden = '1' then -- if the software read the software interrupt bit
+            if ((loc_addr = "00") and (slv_reg_rden = '1')) then -- if the software read the software interrupt bit
                 timer_interrupt_sw <= '0';
             end if;
         end if;

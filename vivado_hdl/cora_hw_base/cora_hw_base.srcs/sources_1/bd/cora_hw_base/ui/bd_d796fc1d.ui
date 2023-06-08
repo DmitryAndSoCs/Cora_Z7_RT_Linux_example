@@ -1,30 +1,30 @@
 {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"1.322",
-   "Default View_TopLeft":"-53,2",
+   "Default View_ScaleFactor":"1.68897",
+   "Default View_TopLeft":"0,29",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.0r6  2020-01-29 bk=1.5227 VDI=41 GEI=36 GUI=JA:10.0 non-TLS
 #  -string -flagsOSRD
-preplace port DDR -pg 1 -lvl 3 -x 570 -y 310 -defaultsOSRD
-preplace port FIXED_IO -pg 1 -lvl 3 -x 570 -y 340 -defaultsOSRD
-preplace port btns_2bits -pg 1 -lvl 3 -x 570 -y 420 -defaultsOSRD
-preplace port rgb_leds -pg 1 -lvl 3 -x 570 -y 240 -defaultsOSRD
-preplace inst btns -pg 1 -lvl 2 -x 410 -y 420 -defaultsOSRD
-preplace inst leds -pg 1 -lvl 2 -x 410 -y 240 -defaultsOSRD
-preplace inst Processing_system -pg 1 -lvl 1 -x 120 -y 380 -defaultsOSRD
-preplace inst simple_hardware_timer_0 -pg 1 -lvl 2 -x 410 -y 80 -defaultsOSRD
-preplace netloc proc_sys_reset_0_peripheral_aresetn 1 1 1 280 100n
-preplace netloc processing_system7_0_FCLK_CLK0 1 1 1 250 80n
-preplace netloc simple_hardware_timer_0_timer_interrupt 1 0 3 10 260 270J 330 540
-preplace netloc axi_interconnect_0_M00_AXI 1 1 1 240 360n
-preplace netloc axi_interconnect_0_M01_AXI 1 1 1 260 220n
+preplace port DDR -pg 1 -lvl 3 -x 580 -y 310 -defaultsOSRD
+preplace port FIXED_IO -pg 1 -lvl 3 -x 580 -y 340 -defaultsOSRD
+preplace port btns_2bits -pg 1 -lvl 3 -x 580 -y 420 -defaultsOSRD
+preplace port rgb_leds -pg 1 -lvl 3 -x 580 -y 240 -defaultsOSRD
+preplace inst btns -pg 1 -lvl 2 -x 420 -y 420 -defaultsOSRD
+preplace inst leds -pg 1 -lvl 2 -x 420 -y 240 -defaultsOSRD
+preplace inst Processing_system -pg 1 -lvl 1 -x 130 -y 380 -defaultsOSRD
+preplace inst simple_hardware_timer_0 -pg 1 -lvl 2 -x 420 -y 80 -defaultsOSRD
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 1 1 290 100n
+preplace netloc processing_system7_0_FCLK_CLK0 1 1 1 260 80n
+preplace netloc simple_hardware_timer_0_timer_interrupt 1 0 3 20 260 280J 330 550
+preplace netloc Processing_system_M02_AXI 1 1 1 240 60n
+preplace netloc axi_interconnect_0_M00_AXI 1 1 1 250 360n
+preplace netloc axi_interconnect_0_M01_AXI 1 1 1 270 220n
 preplace netloc btns_GPIO 1 2 1 NJ 420
-preplace netloc processing_system7_0_DDR 1 1 2 NJ 320 550J
-preplace netloc processing_system7_0_FIXED_IO 1 1 2 NJ 340 NJ
 preplace netloc leds_GPIO 1 2 1 NJ 240
-preplace netloc Processing_system_M02_AXI 1 1 1 230 60n
-levelinfo -pg 1 -10 120 410 570
-pagesize -pg 1 -db -bbox -sgen -10 0 690 500
+preplace netloc processing_system7_0_DDR 1 1 2 NJ 320 560J
+preplace netloc processing_system7_0_FIXED_IO 1 1 2 NJ 340 NJ
+levelinfo -pg 1 0 130 420 580
+pagesize -pg 1 -db -bbox -sgen 0 0 700 500
 "
 }
 {
