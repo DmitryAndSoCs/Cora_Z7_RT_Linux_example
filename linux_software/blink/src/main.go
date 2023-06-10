@@ -31,7 +31,7 @@ func main() {
 		fmt.Printf("Failed to set highest priority: %s", err)
 	}
 
-	err = blink(timerOption, timerBaseAddress, timerBaseAddress)
+	err = blink(timerOption, timerBaseAddress, ledsBaseAddress)
 	if err != nil {
 		fmt.Printf("Blink failed: %v\n", err)
 	}

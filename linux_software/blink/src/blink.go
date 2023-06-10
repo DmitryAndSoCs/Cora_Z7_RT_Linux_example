@@ -16,6 +16,7 @@ import (
 // and blinks until CTRL+C is issued by the user.
 func blink(timerPeriod, timerBaseAddress, ledsBaseAddress string) (err error) {
 	// Check for the correctness of the input
+
 	timerBase, err := strconv.ParseUint(timerBaseAddress, 0, 64) // parse timer base address for hex value
 	if err != nil {
 		fmt.Printf("invalid timer base address (must be hex): %v", err)
@@ -59,20 +60,21 @@ func blink(timerPeriod, timerBaseAddress, ledsBaseAddress string) (err error) {
 			if err != nil {
 				return fmt.Errorf("color switching: %w", err)
 			}
-			err = leds.SetColor("G", 1)
+			err = leds.SetColor("off", 1)
 			if err != nil {
 				return fmt.Errorf("color switching: %w", err)
 			}
 		} else {
-			err = leds.SetColor("G", 0)
+			err = leds.SetColor("off", 0)
 			if err != nil {
 				return fmt.Errorf("color switching: %w", err)
 			}
-			err = leds.SetColor("R", 1)
+			err = leds.SetColor("G", 1)
 			if err != nil {
 				return fmt.Errorf("color switching: %w", err)
 			}
 		}
+		flip = !flip
 		return nil
 	}
 
@@ -94,6 +96,7 @@ func blink(timerPeriod, timerBaseAddress, ledsBaseAddress string) (err error) {
 
 	// Work with the context
 	if koPreset { // if the interrupt from the kernel module is avaiable, use it
+		fmt.Println("Using kernel module interrupt...")
 		for {
 			select {
 			case <-cancelSig: // if user pressed CTRL+C
@@ -101,14 +104,17 @@ func blink(timerPeriod, timerBaseAddress, ledsBaseAddress string) (err error) {
 				ctxCancel() // cancel the context
 				return nil
 			case <-intSig:
+				fmt.Printf("Got FPGA interrupt from kernel module!\n\n")
 				err = blinkLeds()
 				if err != nil {
 					fmt.Printf("%s\n", err)
+					fmt.Println("Cancelling context...")
 					ctxCancel()
 				}
 			}
 		}
 	} else {
+		fmt.Println("Using POLLing...")
 		for {
 			select {
 			case <-cancelSig: // if user pressed CTRL+C
@@ -117,6 +123,7 @@ func blink(timerPeriod, timerBaseAddress, ledsBaseAddress string) (err error) {
 				return nil
 			default:
 				if timer.SoftIntHappened() {
+					fmt.Printf("POLLing: found period happened bit")
 					err = blinkLeds()
 					if err != nil {
 						fmt.Printf("%s\n", err)
